@@ -1,1 +1,118 @@
-//right you code here
+const container = document.querySelector('.container');
+const inputText = container.querySelector('.input-text');
+const postsList = container.querySelector('.posts-list');
+const errorModal = container.querySelector('.error-modal');
+const inputLocation = container.querySelector('.input-location');
+const cancelButton = container.querySelector('.cancel-button');
+const okButton = container.querySelector('.ok-button');
+
+//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
+const posts = [];
+
+window.onload = function() {
+	let posts = localStorage.getItem('key');
+	console.log(posts);
+}
+
+const now = new Date();
+const year = now.getFullYear();
+const month = showCorrectDate(now.getMonth() + 1);
+const day = showCorrectDate(now.getDate());
+const hours = showCorrectDate(now.getHours());
+const minutes = showCorrectDate(now.getMinutes());
+
+let latitude;
+let longitude;
+
+navigator.geolocation.getCurrentPosition(
+	function (position) {
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+	},
+	function (err) {
+		errorModal.classList.add('showed');
+
+		cancelButton.addEventListener('click', () => {
+			errorModal.classList.remove('showed');
+		})
+
+		okButton.addEventListener('click', (e) => {
+			if (inputLocation.value !== '') {
+
+				getUserGeolocation();
+
+				errorModal.classList.remove('showed');
+			}
+		});
+	},
+);
+
+document.addEventListener('keyup', (e) => {
+
+	if (e.key === 'Enter' && inputText.value !== '') {
+		//console.log(inputText.value);
+
+		const li = document.createElement('li');
+		li.classList.add('post');
+		li.innerHTML = `
+		<div class="post-header">
+			<span class="date">${day}.${month}.${year}</span>
+			<span class="time">${hours}:${minutes}</span>
+		</div>
+		<p>${inputText.value}</p>
+		<span class="geolocation">[${latitude}, ${longitude}]</span>
+		`;
+
+		postsList.prepend(li);
+
+		//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
+		posts.push({ 
+			day: +day,
+			month: +month,
+			year: year,
+			hours: hours,
+			minutes: +minutes,
+			text: inputText.value,
+			latitude: latitude,
+			longitude: longitude,
+		});
+	
+		console.log(posts);
+
+		localStorage.setItem('posts', posts);
+
+		inputText.value = '';
+	}
+});
+
+function showCorrectDate(number) {
+	if (number < 10) {
+		return `0${number}`;
+	}
+
+	return number;
+};
+
+//функция, которая будет обрабатывать пользовательский ввод координат
+//при этом функция корректно должна обрабатывать следующие ситуации (и выводить объект содержащий широту и долготу):
+//51.50851, −0.12572 (есть пробел)
+//51.50851,−0.12572 (нет пробела)
+//[51.50851, −0.12572] (есть квадратные скобки)
+//При несоответствии формата функция должна генерировать исключение, которое должно влиять на валидацию поля (валидацию мы проходили).
+export default function getUserGeolocation() {
+	let coords = inputLocation.value.split(',');
+
+	latitude = coords[0].trim();
+	longitude = coords[1].trim();
+
+	if (latitude.includes('[')) {
+		latitude = latitude.substring(1);
+	}
+
+	if (longitude.includes(']')) {
+		longitude = longitude.slice(0, -1);
+	}
+
+	console.log(latitude);
+	console.log(longitude);
+}
