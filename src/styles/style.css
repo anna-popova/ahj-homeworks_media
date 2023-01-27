@@ -88,6 +88,7 @@ input.input-text {
 	position: absolute;
 	left: 0;
 	right: 0;
+	bottom: -85px;
 	width: 600px;
 	margin: auto;
 	padding: 10px;
