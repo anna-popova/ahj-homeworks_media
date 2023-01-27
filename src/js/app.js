@@ -20,7 +20,9 @@ const posts = [];
 
 //!Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
 function save(arr) {
-	localStorage.editorData = JSON.stringify({arr});
+	localStorage.editorData = JSON.stringify({
+		arr,
+	});
 }
 
 function restore() {
@@ -48,7 +50,7 @@ function restore() {
 		<p>${data.arr[i].text}</p>
 		<span class="geolocation">[${data.arr[i].latitude}, ${data.arr[i].longitude}]</span>
 		`;
-	
+
 		postsList.prepend(li);
 
 		posts.push(data.arr[i]);
@@ -58,7 +60,7 @@ function restore() {
 window.onload = function() {
 	//console.log(posts);
 	restore();
-}
+};
 
 //!получаем геолокацию
 navigator.geolocation.getCurrentPosition(
@@ -66,14 +68,14 @@ navigator.geolocation.getCurrentPosition(
 		latitude = position.coords.latitude;
 		longitude = position.coords.longitude;
 	},
-	function (err) {
+	function () {
 		errorModal.classList.add('showed');
 
 		cancelButton.addEventListener('click', () => {
 			errorModal.classList.remove('showed');
-		})
+		});
 
-		okButton.addEventListener('click', (e) => {
+		okButton.addEventListener('click', () => {
 			if (inputLocation.value !== '') {
 
 				getUserGeolocation();
@@ -100,19 +102,19 @@ document.addEventListener('keyup', (e) => {
 		<p>${inputText.value}</p>
 		<span class="geolocation">[${latitude}, ${longitude}]</span>
 		`;
-	
+
 		postsList.prepend(li);
 
 		//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
-		posts.push({ 
-			day: day,
-			month: month,
-			year: year,
-			hours: hours,
-			minutes: minutes,
+		posts.push({
+			day,
+			month,
+			year,
+			hours,
+			minutes,
 			text: inputText.value,
-			latitude: latitude,
-			longitude: longitude,
+			latitude,
+			longitude,
 		});
 		//console.log(posts);
 
@@ -128,16 +130,18 @@ function showCorrectDate(number) {
 	}
 
 	return number;
-};
+}
 
 //функция, которая будет обрабатывать пользовательский ввод координат
-//при этом функция корректно должна обрабатывать следующие ситуации (и выводить объект содержащий широту и долготу):
+//при этом функция корректно должна обрабатывать следующие ситуации
+//(и выводить объект содержащий широту и долготу):
 //51.50851, −0.12572 (есть пробел)
 //51.50851,−0.12572 (нет пробела)
 //[51.50851, −0.12572] (есть квадратные скобки)
-//При несоответствии формата функция должна генерировать исключение, которое должно влиять на валидацию поля (валидацию мы проходили).
+//При несоответствии формата функция должна генерировать исключение,
+//которое должно влиять на валидацию поля (валидацию мы проходили).
 export default function getUserGeolocation() {
-	let coords = inputLocation.value.split(',');
+	const coords = inputLocation.value.split(',');
 
 	latitude = coords[0].trim();
 	longitude = coords[1].trim();

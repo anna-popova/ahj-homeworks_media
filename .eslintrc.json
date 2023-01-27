@@ -24,6 +24,9 @@
 	"no-cond-assign": 0,
 	"eqeqeq": 0,
 	"operator-linebreak": 0,
+	"space-before-function-paren": 0,
+	"prefer-arrow-callback": 0,
+	"padded-blocks": 0,
     "no-restricted-syntax": [
       "error",
       "LabeledStatement",
