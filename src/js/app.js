@@ -6,14 +6,6 @@ const inputLocation = container.querySelector('.input-location');
 const cancelButton = container.querySelector('.cancel-button');
 const okButton = container.querySelector('.ok-button');
 
-//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
-const posts = [];
-
-window.onload = function() {
-	let posts = localStorage.getItem('key');
-	console.log(posts);
-}
-
 const now = new Date();
 const year = now.getFullYear();
 const month = showCorrectDate(now.getMonth() + 1);
@@ -24,6 +16,51 @@ const minutes = showCorrectDate(now.getMinutes());
 let latitude;
 let longitude;
 
+const posts = [];
+
+//!Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
+function save(arr) {
+	localStorage.editorData = JSON.stringify({arr});
+}
+
+function restore() {
+	const json = localStorage.editorData;
+
+	if (!json) {
+		return;
+	}
+
+	const data = JSON.parse(json);
+
+	//console.log(data.arr);
+	//console.log(data.arr.length);
+
+	for (let i = 0; i < data.arr.length; i++) {
+		//console.log(data.arr[i]);
+
+		const li = document.createElement('li');
+		li.classList.add('post');
+		li.innerHTML = `
+		<div class="post-header">
+			<span class="date">${data.arr[i].day}.${data.arr[i].month}.${data.arr[i].year}</span>
+			<span class="time">${data.arr[i].hours}:${data.arr[i].minutes}</span>
+		</div>
+		<p>${data.arr[i].text}</p>
+		<span class="geolocation">[${data.arr[i].latitude}, ${data.arr[i].longitude}]</span>
+		`;
+	
+		postsList.prepend(li);
+
+		posts.push(data.arr[i]);
+	}
+}
+
+window.onload = function() {
+	//console.log(posts);
+	restore();
+}
+
+//!получаем геолокацию
 navigator.geolocation.getCurrentPosition(
 	function (position) {
 		latitude = position.coords.latitude;
@@ -47,6 +84,7 @@ navigator.geolocation.getCurrentPosition(
 	},
 );
 
+//!добавляем новый пост
 document.addEventListener('keyup', (e) => {
 
 	if (e.key === 'Enter' && inputText.value !== '') {
@@ -62,24 +100,23 @@ document.addEventListener('keyup', (e) => {
 		<p>${inputText.value}</p>
 		<span class="geolocation">[${latitude}, ${longitude}]</span>
 		`;
-
+	
 		postsList.prepend(li);
 
 		//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
 		posts.push({ 
-			day: +day,
-			month: +month,
+			day: day,
+			month: month,
 			year: year,
 			hours: hours,
-			minutes: +minutes,
+			minutes: minutes,
 			text: inputText.value,
 			latitude: latitude,
 			longitude: longitude,
 		});
-	
-		console.log(posts);
+		//console.log(posts);
 
-		localStorage.setItem('posts', posts);
+		save(posts);
 
 		inputText.value = '';
 	}
