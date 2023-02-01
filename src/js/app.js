@@ -2,9 +2,9 @@ const container = document.querySelector('.container');
 const inputText = container.querySelector('.input-text');
 const postsList = container.querySelector('.posts-list');
 const errorModal = container.querySelector('.error-modal');
+const form = container.querySelector('.form');
 const inputLocation = container.querySelector('.input-location');
 const cancelButton = container.querySelector('.cancel-button');
-const okButton = container.querySelector('.ok-button');
 
 const now = new Date();
 const year = now.getFullYear();
@@ -75,12 +75,15 @@ navigator.geolocation.getCurrentPosition(
 			errorModal.classList.remove('showed');
 		});
 
-		okButton.addEventListener('click', () => {
-			if (inputLocation.value !== '') {
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
 
+			if (inputLocation.value !== '') {
 				getUserGeolocation();
 
-				errorModal.classList.remove('showed');
+				checkUserGeolocation(latitude, longitude);
+
+				//errorModal.classList.remove('showed');
 			}
 		});
 	},
@@ -105,7 +108,7 @@ document.addEventListener('keyup', (e) => {
 
 		postsList.prepend(li);
 
-		//Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
+		//!Серверную часть и загрузку также реализовывать не нужно, храните всё в памяти
 		posts.push({
 			day,
 			month,
@@ -132,6 +135,24 @@ function showCorrectDate(number) {
 	return number;
 }
 
+function getUserGeolocation() {
+	const coords = inputLocation.value.split(',');
+
+	latitude = coords[0].trim();
+	longitude = coords[1].trim();
+
+	if (latitude.startsWith('[')) {
+		latitude = latitude.substring(1);
+	}
+
+	if (longitude.endsWith(']')) {
+		longitude = longitude.slice(0, -1);
+	}
+
+	// console.log(latitude);
+	// console.log(longitude);
+}
+
 //функция, которая будет обрабатывать пользовательский ввод координат
 //при этом функция корректно должна обрабатывать следующие ситуации
 //(и выводить объект содержащий широту и долготу):
@@ -139,21 +160,34 @@ function showCorrectDate(number) {
 //51.50851,−0.12572 (нет пробела)
 //[51.50851, −0.12572] (есть квадратные скобки)
 //При несоответствии формата функция должна генерировать исключение,
-//которое должно влиять на валидацию поля (валидацию мы проходили).
-export default function getUserGeolocation() {
-	const coords = inputLocation.value.split(',');
+//которое должно влиять на валидацию поля
+function checkUserGeolocation(lati, longi) {
+	console.log(lati);
+	console.log(longi);
 
-	latitude = coords[0].trim();
-	longitude = coords[1].trim();
+	const regExp = /[A-Za-z]\S*$/;
 
-	if (latitude.includes('[')) {
-		latitude = latitude.substring(1);
+	if (regExp.test(lati) || regExp.test(longi)) {
+		console.log('Ошибка!');
+
+		//?ошибка, если раскомментировать код ниже. почему?
+		//form.checkValidity() = false;
+
+		//?код ниже также не работает. как мне через JS повлиять на
+		//?уcтановку значения формы или поля формы в невалидное???
+		inputLocation.validity.valid = false;
+
+		//?т.е. есть ли возможность утановить значение валидности формы в false при помощт JS
+		//?потому что в уроке Валидация форм на стороне клиента вадидацию формы
+		//?проверяют на соответствие регулярному выражению,
+		//?прописанному в атрибуте pattern у поля ввода
+		//?только проблема в том, что я НИКОГДА не напишу такое регулярное выражение,
+		//?которое бы соответствовало тем условиям, которые в дз даются.
+		//?а нагуглить у меня получилось только regExp = /[A-Za-z]\S*$/,
+		//?но в атрибут pattern его не поставишь - не соответствует указанным в задании условиям
+		//?подскажите, как мне выйти из этой ситуации
 	}
 
-	if (longitude.includes(']')) {
-		longitude = longitude.slice(0, -1);
-	}
-
-	console.log(latitude);
-	console.log(longitude);
+	console.dir(inputLocation.validity);
+	console.dir(inputLocation.validity.valid);
 }

@@ -26,12 +26,14 @@
 			<p>К сожалению, нам не удалось опрделить ваше местоположение. Пожалуйста, дайте разрешение на использование геолокации, либо введите координаты вручную.</p>
 			<p>Широта и долгота через запятую.</p>
 
-			<input type="text" class="input-text input-location" placeholder="00.00000, 00.00000">
+			<form class="form">
+				<input type="text" class="input-text input-location" placeholder="00.00000, 00.00000" required>
 
-			<div class="buttons-group">
-				<button class="button cancel-button">Отмена</button>
-				<button class="button ok-button">OK</button>
-			</div>
+				<div class="buttons-group">
+					<button class="button cancel-button">Отмена</button>
+					<button class="button ok-button" type="submit">OK</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </body>
