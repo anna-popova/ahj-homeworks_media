@@ -73,6 +73,11 @@ body {
    color: #333;
 }
 
+.input-text.invalid {
+	position: relative;
+	border: 1px solid red;
+}
+
 textarea.input-text {
 	min-height: 70px;
 	resize: vertical;
@@ -104,6 +109,19 @@ input.input-text {
 
 .error-modal p {
 	margin-bottom: 10px;
+}
+
+.error-message {
+	display: none;
+
+	position: absolute;
+	bottom: 25px;
+	left: 20px;
+	color: red;
+}
+
+.error-message.showed {
+	display: block;
 }
 
 .buttons-group {

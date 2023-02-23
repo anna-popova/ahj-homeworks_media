@@ -2,6 +2,7 @@ const container = document.querySelector('.container');
 const inputText = container.querySelector('.input-text');
 const postsList = container.querySelector('.posts-list');
 const errorModal = container.querySelector('.error-modal');
+const errorMessage = container.querySelector('.error-message');
 const form = container.querySelector('.form');
 const inputLocation = container.querySelector('.input-location');
 const cancelButton = container.querySelector('.cancel-button');
@@ -79,11 +80,7 @@ navigator.geolocation.getCurrentPosition(
 			e.preventDefault();
 
 			if (inputLocation.value !== '') {
-				getUserGeolocation();
-
-				checkUserGeolocation(latitude, longitude);
-
-				//errorModal.classList.remove('showed');
+				getUserGeolocation(inputLocation.value, inputLocation);
 			}
 		});
 	},
@@ -135,58 +132,28 @@ function showCorrectDate(number) {
 	return number;
 }
 
-function getUserGeolocation() {
-	const coords = inputLocation.value.split(',');
+//! пользовательский ввод геолокации
+function getUserGeolocation(str, input) {
+	const regex = /^(\[?-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?\]?)$/;
 
-	latitude = coords[0].trim();
-	longitude = coords[1].trim();
+	const match = regex.exec(str);
 
-	if (latitude.startsWith('[')) {
-		latitude = latitude.substring(1);
+	if (match) {
+		if (match[1].startsWith('[')) {
+			match[1] = match[1].substring(1);
+		}
+		latitude = parseFloat(match[1]);
+		longitude = parseFloat(match[2]);
+		console.log(latitude, longitude);
+
+		errorModal.classList.remove('showed');
+	} else {
+		console.log('Invalid coordinates');
+		
+		input.setCustomValidity('Введите корректные координаты!');
+
+		input.classList.add('invalid');
+
+		errorMessage.classList.add('showed');
 	}
-
-	if (longitude.endsWith(']')) {
-		longitude = longitude.slice(0, -1);
-	}
-
-	// console.log(latitude);
-	// console.log(longitude);
-}
-
-//функция, которая будет обрабатывать пользовательский ввод координат
-//при этом функция корректно должна обрабатывать следующие ситуации
-//(и выводить объект содержащий широту и долготу):
-//51.50851, −0.12572 (есть пробел)
-//51.50851,−0.12572 (нет пробела)
-//[51.50851, −0.12572] (есть квадратные скобки)
-//При несоответствии формата функция должна генерировать исключение,
-//которое должно влиять на валидацию поля
-function checkUserGeolocation(lati, longi) {
-	console.log(lati);
-	console.log(longi);
-
-	const regExp = /[A-Za-z]\S*$/;
-	// const regExp=/^\[?-?\d{1,2}\.\d{5,}, ?-?\d{1,2}\.\d{5,}\]?$/;
-
-	if (regExp.test(lati) || regExp.test(longi)) {
-		console.log('Ошибка!');
-
-		//?ошибка, если раскомментировать код ниже. почему?
-		//form.checkValidity() = false;
-
-		//?код ниже также не работает. как мне через JS повлиять на
-		//уcтановку значения формы или поля формы в невалидное???
-		inputLocation.validity.valid = false;
-
-		//?т.е. есть ли возможность утановить значение валидности формы в false при помощт JS
-		//потому что в уроке Валидация форм на стороне клиента вадидацию формы
-		//проверяют на соответствие регулярному выражению,
-		//прописанному в атрибуте pattern у поля ввода
-		//только проблема в том, что я, видимо, не смогу написать
-		//такое регулярное выражение,
-		//которое бы соответствовало тем условиям, которые в дз даются.
-	}
-
-	console.dir(inputLocation.validity);
-	console.dir(inputLocation.validity.valid);
 }
