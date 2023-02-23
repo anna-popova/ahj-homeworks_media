@@ -133,7 +133,7 @@ function showCorrectDate(number) {
 }
 
 //! пользовательский ввод геолокации
-function getUserGeolocation(str, input) {
+export default function getUserGeolocation(str, input) {
 	const regex = /^(\[?-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?\]?)$/;
 
 	const match = regex.exec(str);
@@ -147,13 +147,17 @@ function getUserGeolocation(str, input) {
 		console.log(latitude, longitude);
 
 		errorModal.classList.remove('showed');
+
+		console.log(form.checkValidity());
 	} else {
 		console.log('Invalid coordinates');
-		
+
 		input.setCustomValidity('Введите корректные координаты!');
 
 		input.classList.add('invalid');
 
-		errorMessage.classList.add('showed');
+		errorMessage.classList.remove('hidden');
+
+		console.log(form.checkValidity());
 	}
 }

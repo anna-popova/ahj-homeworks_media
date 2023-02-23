@@ -112,16 +112,14 @@ input.input-text {
 }
 
 .error-message {
-	display: none;
-
 	position: absolute;
 	bottom: 25px;
 	left: 20px;
 	color: red;
 }
 
-.error-message.showed {
-	display: block;
+.error-message.hidden {
+	display: none;
 }
 
 .buttons-group {
